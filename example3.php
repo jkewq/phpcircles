@@ -22,6 +22,11 @@ const COLOR_DEFS = [
 define('RED', 0);
 define('GREEN', 1);
 define('BLUE', 2);
+define('X', 0);
+define('Y', 1);
+define('R', 2);
+
+$circlesList = [];
 
 function isCentreInEdgeArea(int $pX, int $pY): bool {
 	if ($pX < EDGE_PADDING || $pX > IMG_WIDTH-EDGE_PADDING) {
@@ -44,6 +49,19 @@ function limitRadius(int $r, int $pX, int $pY): int {
 	return $r;
 }
 
+function isIntersectingOtherCircles(int $r, int $pX, int $pY): bool {
+	global $circlesList;
+	if (is_iterable($circlesList) === true && count($circlesList) > 0) {
+		foreach($circlesList as $circle) {
+			$dist = floor(sqrt(($pX-$circle[X])**2 + ($pY-$circle[Y])**2));
+			if ($dist <= $r+$circle[R]) {
+				return true;	
+			}
+		}
+	}
+	return false;
+}
+
 $img = imagecreatetruecolor(IMG_WIDTH, IMG_HEIGHT);
 $bgColor = imagecolorallocate($img, BACKGROUND[RED], BACKGROUND[GREEN], BACKGROUND[BLUE]);
 imagefilledrectangle($img, 0, 0, IMG_WIDTH, IMG_HEIGHT, $bgColor);
@@ -64,12 +82,17 @@ for($i=0;$i<NUM_CIRCLES;$i++) {
 		continue;
 	}
 	$radius = limitRadius(rand(RADIUS_MIN, RADIUS_MAX), $pX, $pY);
+	if (isIntersectingOtherCircles($radius, $pX, $pY) === true) {
+		$i--;
+		continue;
+	}
 	$colorIndex = rand(0, $colorBound);
 	if (FILLED === true) {
 		imagefilledarc($img, $pX, $pY, $radius, $radius, 0, 360, $colorAlloc[$colorIndex], IMG_ARC_PIE);
 	} else {
 		imagearc($img, $pX, $pY, $radius, $radius, 0, 360, $colorAlloc[$colorIndex]);	
 	}
+	array_push($circlesList, [$pX, $pY, $radius]);
 }
 
 header("Content-type: image/png");
