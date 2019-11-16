@@ -2,7 +2,7 @@
 
 const IMG_WIDTH = 640;
 const IMG_HEIGHT = 480;
-const EDGE_PADDING = 50; // distance from the borders where the centre of circle can't be placed
+const EDGE_PADDING = 20; // distance from the borders where the centre of circle can't be placed
 const BACKGROUND = [33, 33, 33];
 const NUM_CIRCLES = 30;
 const FILLED = true;
@@ -31,6 +31,13 @@ function isCentreInEdgeArea(int $pX, int $pY): bool {
 }
 
 function limitRadius(int $r, int $pX, int $pY): int {
+	$distLeftBorder = $pX;
+	$distRightBorder = IMG_WIDTH - $pX;
+	$distTopBorder = $pY;
+	$distBottomBorder = IMG_HEIGHT - $pY;
+	if ($r > $distLeftBorder || $r > $distRightBorder || $r > $distTopBorder || $r > $distBottomBorder) {
+		return min($distLeftBorder, $distRightBorder, $distTopBorder, $distBottomBorder);
+	}
 	return $r;
 }
 
