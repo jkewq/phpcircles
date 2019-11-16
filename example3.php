@@ -1,7 +1,8 @@
 <?php
 
-// RESTRICTION: the circles can't be partly outside from the image.
-// RESTRICTION: a padding can be defined by the EDGE_PADDING constant. It contains the number of pixels from the border that must be left empty.
+// RESTRICTION: the circles can't intersect each other
+// KNOWN ISSUES: it don't work on too many circles (timeout); the average distance between the circles increase;
+//               the average radius decreases
 
 const IMG_WIDTH = 640;
 const IMG_HEIGHT = 480;
